@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package crypto;
+
+message MsgRequest{
+  string text = 1;
+}
+
+message MsgResponse{
+  string text = 1;
+}
+
+service Crypto{
+  rpc SendMsg(MsgRequest) returns (MsgResponse);
+}
