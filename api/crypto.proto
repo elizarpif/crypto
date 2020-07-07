@@ -2,14 +2,14 @@ syntax = "proto3";
 
 package crypto;
 
-message MsgRequest{
+message MsgRequest {
   string text = 1;
 }
 
-message MsgResponse{
+message MsgResponse {
   string text = 1;
 }
 
-service Crypto{
+service Crypto {
   rpc SendMsg(MsgRequest) returns (MsgResponse);
 }
