@@ -4,8 +4,12 @@
 package api
 
 import (
+	context "context"
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
+	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	math "math"
 )
 
@@ -117,4 +121,84 @@ var fileDescriptor_527278fb02d03321 = []byte{
 	0x9b, 0x2c, 0xa4, 0xc3, 0xc5, 0x1e, 0x9c, 0x9a, 0x97, 0xe2, 0x5b, 0x9c, 0x2e, 0xc4, 0xaf, 0x97,
 	0x58, 0x90, 0xa9, 0x87, 0x30, 0x5c, 0x4a, 0x00, 0x21, 0x00, 0x31, 0x2b, 0x89, 0x0d, 0xec, 0x10,
 	0x63, 0x40, 0x00, 0x00, 0x00, 0xff, 0xff, 0xb9, 0xe8, 0x75, 0xa0, 0x98, 0x00, 0x00, 0x00,
+}
+
+// Reference imports to suppress errors if they are not otherwise used.
+var _ context.Context
+var _ grpc.ClientConnInterface
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the grpc package it is being compiled against.
+const _ = grpc.SupportPackageIsVersion6
+
+// CryptoClient is the client API for Crypto service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
+type CryptoClient interface {
+	SendMsg(ctx context.Context, in *MsgRequest, opts ...grpc.CallOption) (*MsgResponse, error)
+}
+
+type cryptoClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewCryptoClient(cc grpc.ClientConnInterface) CryptoClient {
+	return &cryptoClient{cc}
+}
+
+func (c *cryptoClient) SendMsg(ctx context.Context, in *MsgRequest, opts ...grpc.CallOption) (*MsgResponse, error) {
+	out := new(MsgResponse)
+	err := c.cc.Invoke(ctx, "/api.Crypto/SendMsg", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// CryptoServer is the server API for Crypto service.
+type CryptoServer interface {
+	SendMsg(context.Context, *MsgRequest) (*MsgResponse, error)
+}
+
+// UnimplementedCryptoServer can be embedded to have forward compatible implementations.
+type UnimplementedCryptoServer struct {
+}
+
+func (*UnimplementedCryptoServer) SendMsg(ctx context.Context, req *MsgRequest) (*MsgResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendMsg not implemented")
+}
+
+func RegisterCryptoServer(s *grpc.Server, srv CryptoServer) {
+	s.RegisterService(&_Crypto_serviceDesc, srv)
+}
+
+func _Crypto_SendMsg_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CryptoServer).SendMsg(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.Crypto/SendMsg",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CryptoServer).SendMsg(ctx, req.(*MsgRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _Crypto_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "api.Crypto",
+	HandlerType: (*CryptoServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "SendMsg",
+			Handler:    _Crypto_SendMsg_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "crypto.proto",
 }
